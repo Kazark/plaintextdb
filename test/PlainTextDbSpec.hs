@@ -10,10 +10,29 @@ import PlainTextDb
 main :: IO ()
 main = hspec spec
 
+instance Arbitrary CellStyle where
+  arbitrary = oneof [return Plain, return Underlined]
+
+instance Arbitrary Cell where
+  arbitrary = do
+    style <- arbitrary
+    contents <- arbitrary
+    Positive width <- arbitrary
+    return $ Cell style contents width
+
+instance Arbitrary TextRow where
+  arbitrary = do
+    Positive indent <- arbitrary
+    cells <- arbitrary
+    return $ TextRow indent cells
+
 spec :: Spec
-spec =
+spec = do
   describe "strip" $ do
     it "removes leading and trailing whitespace" $
       strip "\t  foo bar\n" `shouldBe` "foo bar"
     it "is idempotent" $ property $
       \str -> strip str == strip (strip str)
+  describe "validate" $ do
+    it "fails if the width of all rows are not equal" $ property $
+        \(r1,r2) -> rowWidth r1 /= rowWidth r2 ==> validate [r1, r2] == Just UnequalRows
