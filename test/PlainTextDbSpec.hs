@@ -31,6 +31,15 @@ spec = do
   describe "validate" $
     it "fails if the width of all rows are not equal" $ property $
         \(r1,r2) -> rowWidth r1 /= rowWidth r2 ==> validate [r1, r2] == Just UnequalRows
+  describe "formatCell" $ do
+    it "always begins a plain cell with a space" $ property $
+        \cell -> style cell == Plain ==> head (formatCell cell) == ' '
+    it "always ends a plain cell with a space" $ property $
+        \cell -> style cell == Plain ==> last (formatCell cell) == ' '
+    it "always begins an underlined cell with an underscore" $ property $
+        \cell -> style cell == Underlined ==> head (formatCell cell) == '_'
+    it "always ends an underlined cell with an underscore" $ property $
+        \cell -> style cell == Underlined ==> last (formatCell cell) == '_'
   describe "format" $
     it "generates one row of output for each row in the table" $ property $
         forAll arbitrary $ \txttbl -> length (format txttbl) == length txttbl

@@ -19,17 +19,17 @@ data Cell = Cell {
 } deriving (Eq, Show)
 
 data TextRow = TextRow {
-      indentedNCells :: Int
+      indent :: Int
     , cells :: [Cell]
 } deriving (Eq, Show)
 
 type TextTable = [TextRow]
 
-data StructureError = UnequalRows deriving (Eq, Show)
-
 rowWidth :: TextRow -> Int
-rowWidth TextRow { indentedNCells = indent, cells = cells } =
+rowWidth TextRow { indent = indent, cells = cells } =
     indent + sum ( map width cells)
+
+data StructureError = UnequalRows deriving (Eq, Show)
 
 validateWidth :: TextTable -> Bool
 validateWidth = allEq . map rowWidth where
@@ -41,6 +41,15 @@ validate txttbl =
     if validateWidth txttbl
     then Nothing
     else Just UnequalRows
+
+formatCell :: Cell -> String
+formatCell Cell { style = style, contents = _, width = _ } =
+    case style of
+        Plain -> " "
+        Underlined -> "_"
+
+formatRow :: TextRow -> String
+formatRow _ = ""
 
 format :: TextTable -> [String]
 format = map (const "")
