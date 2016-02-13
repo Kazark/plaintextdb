@@ -42,5 +42,6 @@ validate txttbl =
     then Nothing
     else Just UnequalRows
 
-strip :: String -> String
-strip = dropWhile isSpace . reverse . dropWhile isSpace . reverse
+format :: TextTable -> [String]
+format = map (const "")
+

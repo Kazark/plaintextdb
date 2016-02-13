@@ -28,11 +28,9 @@ instance Arbitrary TextRow where
 
 spec :: Spec
 spec = do
-  describe "strip" $ do
-    it "removes leading and trailing whitespace" $
-      strip "\t  foo bar\n" `shouldBe` "foo bar"
-    it "is idempotent" $ property $
-      \str -> strip str == strip (strip str)
-  describe "validate" $ do
+  describe "validate" $
     it "fails if the width of all rows are not equal" $ property $
         \(r1,r2) -> rowWidth r1 /= rowWidth r2 ==> validate [r1, r2] == Just UnequalRows
+  describe "format" $
+    it "generates one row of output for each row in the table" $ property $
+        forAll arbitrary $ \txttbl -> length (format txttbl) == length txttbl

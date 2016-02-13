@@ -3,4 +3,4 @@ module Main where
 import PlainTextDb
 
 main :: IO ()
-main = interact strip
+main = putStrLn $ unlines $ format []
