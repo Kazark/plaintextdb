@@ -20,8 +20,8 @@ addons:
     - ghc-7.10.3
 
 install:
-  - stack setup --no-terminal
-  - stack build --only-snapshot --no-terminal
+  - ./.travis_long.sh stack setup --no-terminal
+  - ./.travis_long.sh stack build --only-snapshot --no-terminal
 
 script:
   - stack build --no-terminal
