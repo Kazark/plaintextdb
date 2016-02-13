@@ -1,6 +1,7 @@
 module PlainTextDb where
 
 import Data.Char
+import Data.List
 
 data Token =
     VertSep -- |
@@ -27,7 +28,7 @@ type TextTable = [TextRow]
 
 rowWidth :: TextRow -> Int
 rowWidth TextRow { indent = indent, cells = cells } =
-    indent + sum ( map width cells)
+    indent + sum (map width cells)
 
 data StructureError = UnequalRows deriving (Eq, Show)
 
@@ -49,7 +50,8 @@ formatCell Cell { style = style, contents = _, width = _ } =
         Underlined -> "_"
 
 formatRow :: TextRow -> String
-formatRow _ = ""
+formatRow TextRow { indent = _, cells = cells } = 
+    "|" ++ intercalate "|" (map formatCell cells) ++ "|"
 
 format :: TextTable -> [String]
 format = map (const "")

@@ -22,9 +22,16 @@ instance Arbitrary Cell where
 
 instance Arbitrary TextRow where
   arbitrary = do
-    Positive indent <- arbitrary
+    indent <- arbitrary
     cells <- arbitrary
     return $ TextRow indent cells
+
+-- TODO must be a better way to do this with standard functions
+countBars :: String -> Int
+countBars = sum . map (b2i . (==) '|') where
+    b2i :: Bool -> Int
+    b2i False = 0
+    b2i True = 1
 
 spec :: Spec
 spec = do
@@ -40,6 +47,9 @@ spec = do
         \cell -> style cell == Underlined ==> head (formatCell cell) == '_'
     it "always ends an underlined cell with an underscore" $ property $
         \cell -> style cell == Underlined ==> last (formatCell cell) == '_'
+  describe "formatRow" $
+    it "generates cells + 1 vertical bars" $ property $
+        \row -> length (cells row) > 0 ==> countBars (formatRow row) == length (cells row) + 1
   describe "format" $
-    it "generates one row of output for each row in the table" $ property $
-        forAll arbitrary $ \txttbl -> length (format txttbl) == length txttbl
+    it "generates exactly one row of output for each row in the table" $ property $
+        \txttbl -> length (format txttbl) == length txttbl
