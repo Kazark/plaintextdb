@@ -1,6 +1,6 @@
 module Main where
 
-import Data.String.Strip
+import PlainTextDb
 
 main :: IO ()
 main = interact strip
