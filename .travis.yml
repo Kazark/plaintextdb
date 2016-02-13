@@ -11,6 +11,7 @@ before_install:
 - ghc --version
 - travis_retry curl -L https://github.com/commercialhaskell/stack/releases/download/v0.1.1.0/stack-0.1.1.0-x86_64-linux.gz | gunzip > ~/.local/bin/stack
 - chmod a+x ~/.local/bin/stack
+- chmod a+x ./.travis_long.sh
 
 addons:
   apt:
