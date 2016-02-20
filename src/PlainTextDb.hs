@@ -1,3 +1,4 @@
+{-# LANGUAGE RecordWildCards #-}
 module PlainTextDb where
 
 import Data.Char
@@ -44,10 +45,12 @@ validate txttbl =
     else Just UnequalRows
 
 formatCell :: Cell -> String
-formatCell Cell { style = style, contents = _, width = _ } =
-    case style of
-        Plain -> " "
-        Underlined -> "_"
+formatCell Cell { .. } =
+    let spaceChar =
+            case style of
+                Plain -> ' '
+                Underlined -> '_'
+    in spaceChar : contents ++ replicate (width - length contents - 1) spaceChar
 
 formatRow :: TextRow -> String
 formatRow TextRow { indent = _, cells = cells } = 

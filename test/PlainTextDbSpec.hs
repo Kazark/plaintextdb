@@ -16,7 +16,7 @@ instance Arbitrary CellStyle where
 instance Arbitrary Cell where
   arbitrary = do
     style <- arbitrary
-    contents <- arbitrary
+    contents <- filter (/= '|') <$> arbitrary
     Positive width <- arbitrary
     return $ Cell style contents width
 
@@ -29,6 +29,13 @@ instance Arbitrary TextRow where
 countBars :: String -> Int
 countBars = length . filter (== '|')
 
+validCell :: Gen Cell
+validCell = do
+    style <- arbitrary
+    contents <- arbitrary
+    let width = length contents + 2
+    return $ Cell style contents width
+
 spec :: Spec
 spec = do
   describe "validate" $
@@ -36,13 +43,15 @@ spec = do
         \(r1,r2) -> rowWidth r1 /= rowWidth r2 ==> validate [r1, r2] == Just UnequalRows
   describe "formatCell" $ do
     it "always begins a plain cell with a space" $ property $
-        \cell -> style cell == Plain ==> head (formatCell cell) == ' '
+        forAll validCell $ \cell -> style cell == Plain ==> head (formatCell cell) == ' '
     it "always ends a plain cell with a space" $ property $
-        \cell -> style cell == Plain ==> last (formatCell cell) == ' '
+        forAll validCell $ \cell -> style cell == Plain ==> last (formatCell cell) == ' '
     it "always begins an underlined cell with an underscore" $ property $
-        \cell -> style cell == Underlined ==> head (formatCell cell) == '_'
+        forAll validCell $ \cell -> style cell == Underlined ==> head (formatCell cell) == '_'
     it "always ends an underlined cell with an underscore" $ property $
-        \cell -> style cell == Underlined ==> last (formatCell cell) == '_'
+        forAll validCell $ \cell -> style cell == Underlined ==> last (formatCell cell) == '_'
+    it "formats valid cells to the full width" $ property $
+        forAll validCell $ \cell -> length (formatCell cell) == width cell
   describe "formatRow" $
     it "generates cells + 1 vertical bars" $ property $
         \row -> length (cells row) > 0 ==> countBars (formatRow row) == length (cells row) + 1
