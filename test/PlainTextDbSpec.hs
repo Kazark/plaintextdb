@@ -26,12 +26,8 @@ instance Arbitrary TextRow where
     cells <- arbitrary
     return $ TextRow indent cells
 
--- TODO must be a better way to do this with standard functions
 countBars :: String -> Int
-countBars = sum . map (b2i . (==) '|') where
-    b2i :: Bool -> Int
-    b2i False = 0
-    b2i True = 1
+countBars = length . filter (== '|')
 
 spec :: Spec
 spec = do

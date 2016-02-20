@@ -16,7 +16,7 @@ data CellStyle = Plain | Underlined deriving (Eq, Show)
 data Cell = Cell {
       style :: CellStyle
     , contents :: String
-    , width :: Int
+    , width :: Int -- Actual formatted width: >= contents + 2
 } deriving (Eq, Show)
 
 data TextRow = TextRow {
